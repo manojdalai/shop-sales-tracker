@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react'
+import GoogleSheetsService from '../services/googleSheets'
 
 const SalesContext = createContext()
 
@@ -16,6 +17,7 @@ export const SalesProvider = ({ children }) => {
     const saved = localStorage.getItem('salesHistory')
     return saved ? JSON.parse(saved) : []
   })
+  const [googleSheets] = useState(new GoogleSheetsService())
 
   useEffect(() => {
     localStorage.setItem('salesHistory', JSON.stringify(salesHistory))
@@ -55,18 +57,34 @@ export const SalesProvider = ({ children }) => {
     return currentSale.reduce((total, item) => total + item.price * item.quantity, 0)
   }
 
-  const completeSale = () => {
+  const completeSale = async () => {
     if (currentSale.length === 0) return
 
     const sale = {
       id: Date.now(),
-      date: new Date().toISOString(),
+      date: new Date().toISOString().split('T')[0], // Format as YYYY-MM-DD
+      time: new Date().toTimeString().split(' ')[0].substring(0, 5), // Format as HH:MM
       items: currentSale,
       total: getCurrentTotal()
     }
 
     setSalesHistory(prev => [sale, ...prev])
     setCurrentSale([])
+
+    // Auto-sync to Google Sheets if configured
+    try {
+      const syncStatus = googleSheets.getSyncStatus()
+      if (syncStatus.status === 'connected' || syncStatus.status === 'synced') {
+        const unsyncedSales = googleSheets.getUnsyncedSales([sale])
+        if (unsyncedSales.length > 0) {
+          await googleSheets.syncSales(unsyncedSales)
+        }
+      }
+    } catch (error) {
+      console.log('Auto-sync failed:', error)
+      // Don't show error to user - sale is still saved locally
+    }
+
     return sale
   }
 

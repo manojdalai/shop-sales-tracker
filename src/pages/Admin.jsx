@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Plus, Trash2, Edit2, Save, X, Search } from 'lucide-react'
+import { Plus, Trash2, Edit2, Save, X, Search, Cloud, Settings, Check, AlertCircle } from 'lucide-react'
+import GoogleSheetsService from '../services/googleSheets'
 
 const Admin = () => {
   const [products, setProducts] = useState([])
@@ -16,6 +17,16 @@ const Admin = () => {
     category: 'rice',
     image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400'
   })
+
+  // Google Sheets state
+  const [googleSheets, setGoogleSheets] = useState(new GoogleSheetsService())
+  const [showGoogleSettings, setShowGoogleSettings] = useState(false)
+  const [googleConfig, setGoogleConfig] = useState({
+    scriptUrl: '',
+    sheetUrl: ''
+  })
+  const [syncStatus, setSyncStatus] = useState({})
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     loadProducts()
@@ -116,6 +127,70 @@ const Admin = () => {
     setEditingProduct(null)
   }
 
+  // Google Sheets functions
+  useEffect(() => {
+    const status = googleSheets.getSyncStatus()
+    setSyncStatus(status)
+    setGoogleConfig({
+      scriptUrl: status.scriptUrl || '',
+      sheetUrl: status.sheetUrl || ''
+    })
+  }, [googleSheets])
+
+  const handleTestConnection = async () => {
+    setIsLoading(true)
+    try {
+      const result = await googleSheets.testConnection()
+      if (result.success) {
+        alert('✅ Connection successful!')
+        const status = googleSheets.getSyncStatus()
+        setSyncStatus(status)
+      } else {
+        alert(`❌ Connection failed: ${result.message}`)
+      }
+    } catch (error) {
+      alert(`❌ Error: ${error.message}`)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleCreateSheet = async () => {
+    setIsLoading(true)
+    try {
+      const result = await googleSheets.createSheet()
+      if (result.success) {
+        alert('✅ Sheet created successfully!')
+      } else {
+        alert(`❌ Sheet creation failed: ${result.message}`)
+      }
+    } catch (error) {
+      alert(`❌ Error: ${error.message}`)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleSaveGoogleConfig = () => {
+    if (!googleConfig.scriptUrl || !googleConfig.sheetUrl) {
+      alert('Please enter both Script URL and Sheet URL')
+      return
+    }
+
+    googleSheets.saveConfig(googleConfig.scriptUrl, googleConfig.sheetUrl)
+    alert('✅ Configuration saved!')
+    setShowGoogleSettings(false)
+  }
+
+  const handleClearGoogleConfig = () => {
+    if (window.confirm('Clear Google Sheets configuration?')) {
+      googleSheets.clearConfig()
+      setGoogleConfig({ scriptUrl: '', sheetUrl: '' })
+      setSyncStatus({ status: 'disconnected' })
+      alert('✅ Configuration cleared!')
+    }
+  }
+
   const handlePriceChange = (productId, change) => {
     const updatedProducts = products.map(p => {
       if (p.id === productId) {
@@ -132,13 +207,143 @@ const Admin = () => {
     <div className="container mx-auto px-4 py-4 max-w-2xl mb-20">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-2xl font-bold">Admin - Product Management</h1>
-        <button
-          onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-primary text-white p-2 rounded-lg tap-highlight-transparent"
-        >
-          {showAddForm ? <X className="w-6 h-6" /> : <Plus className="w-6 h-6" />}
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowGoogleSettings(!showGoogleSettings)}
+            className="bg-blue-500 text-white p-2 rounded-lg tap-highlight-transparent"
+          >
+            <Cloud className="w-6 h-6" />
+          </button>
+          <button
+            onClick={() => setShowAddForm(!showAddForm)}
+            className="bg-primary text-white p-2 rounded-lg tap-highlight-transparent"
+          >
+            {showAddForm ? <X className="w-6 h-6" /> : <Plus className="w-6 h-6" />}
+          </button>
+        </div>
       </div>
+
+      {/* Google Sheets Settings */}
+      {showGoogleSettings && (
+        <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-bold flex items-center gap-2">
+              <Cloud className="w-5 h-5" />
+              Google Sheets Settings
+            </h3>
+            <button
+              onClick={() => setShowGoogleSettings(false)}
+              className="text-gray-500 p-1 tap-highlight-transparent"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Sync Status */}
+          <div className="mb-4 p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="font-semibold">Status:</span>
+              {syncStatus.status === 'connected' && (
+                <span className="flex items-center gap-1 text-green-600">
+                  <Check className="w-4 h-4" />
+                  Connected
+                </span>
+              )}
+              {syncStatus.status === 'synced' && (
+                <span className="flex items-center gap-1 text-green-600">
+                  <Check className="w-4 h-4" />
+                  Synced
+                </span>
+              )}
+              {syncStatus.status === 'disconnected' && (
+                <span className="flex items-center gap-1 text-gray-600">
+                  <AlertCircle className="w-4 h-4" />
+                  Not Connected
+                </span>
+              )}
+              {syncStatus.status === 'error' && (
+                <span className="flex items-center gap-1 text-red-600">
+                  <AlertCircle className="w-4 h-4" />
+                  Error
+                </span>
+              )}
+            </div>
+            {syncStatus.lastSyncTime && (
+              <p className="text-sm text-gray-600">
+                Last sync: {new Date(syncStatus.lastSyncTime).toLocaleString()}
+              </p>
+            )}
+          </div>
+
+          {/* Configuration */}
+          <div className="space-y-3 mb-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Script URL</label>
+              <input
+                type="url"
+                placeholder="https://script.google.com/macros/s/..."
+                value={googleConfig.scriptUrl}
+                onChange={(e) => setGoogleConfig({ ...googleConfig, scriptUrl: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Sheet URL</label>
+              <input
+                type="url"
+                placeholder="https://docs.google.com/spreadsheets/d/..."
+                value={googleConfig.sheetUrl}
+                onChange={(e) => setGoogleConfig({ ...googleConfig, sheetUrl: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg text-sm"
+              />
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <button
+              onClick={handleSaveGoogleConfig}
+              className="bg-primary text-white py-2 rounded-lg text-sm font-semibold tap-highlight-transparent"
+            >
+              Save Config
+            </button>
+            <button
+              onClick={handleTestConnection}
+              disabled={isLoading}
+              className="bg-blue-500 text-white py-2 rounded-lg text-sm font-semibold tap-highlight-transparent disabled:opacity-50"
+            >
+              {isLoading ? 'Testing...' : 'Test Connection'}
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={handleCreateSheet}
+              disabled={isLoading}
+              className="bg-green-500 text-white py-2 rounded-lg text-sm font-semibold tap-highlight-transparent disabled:opacity-50"
+            >
+              {isLoading ? 'Creating...' : 'Create Sheet'}
+            </button>
+            <button
+              onClick={handleClearGoogleConfig}
+              className="bg-red-500 text-white py-2 rounded-lg text-sm font-semibold tap-highlight-transparent"
+            >
+              Clear Config
+            </button>
+          </div>
+
+          {/* Help Text */}
+          <div className="mt-4 p-3 bg-blue-50 rounded-lg text-xs">
+            <p className="font-semibold mb-1">Setup Instructions:</p>
+            <ol className="list-decimal list-inside space-y-1 text-gray-700">
+              <li>See GOOGLE-SCRIPT.md for setup steps</li>
+              <li>Copy Google Apps Script URL</li>
+              <li>Create Google Sheet and copy URL</li>
+              <li>Test connection and create sheet</li>
+            </ol>
+          </div>
+        </div>
+      )}
 
       {showAddForm && (
         <div className="bg-white rounded-lg shadow-md p-4 mb-4">

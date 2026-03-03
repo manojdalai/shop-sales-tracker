@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Download, TrendingUp, Calendar, Package, DollarSign } from 'lucide-react'
+import { Download, TrendingUp, Calendar, Package, DollarSign, Cloud, RefreshCw, Check, AlertCircle } from 'lucide-react'
 import { useSales } from '../context/SalesContext'
+import GoogleSheetsService from '../services/googleSheets'
 
 const Reports = () => {
   const { salesHistory, exportToCSV, getTodaysTotal } = useSales()
@@ -13,9 +14,19 @@ const Reports = () => {
     avgSale: 0
   })
 
+  // Google Sheets state
+  const [googleSheets] = useState(new GoogleSheetsService())
+  const [syncStatus, setSyncStatus] = useState({})
+  const [isSyncing, setIsSyncing] = useState(false)
+
   useEffect(() => {
     calculateStats()
   }, [salesHistory])
+
+  useEffect(() => {
+    const status = googleSheets.getSyncStatus()
+    setSyncStatus(status)
+  }, [googleSheets])
 
   const calculateStats = () => {
     const now = new Date()
@@ -64,29 +75,34 @@ const Reports = () => {
     window.URL.revokeObjectURL(url)
   }
 
-  const handleExportGoogleSheets = () => {
-    const csv = exportToCSV()
-    if (!csv) {
-      alert('No sales data to export')
+  const handleSyncGoogleSheets = async () => {
+    if (!syncStatus.scriptUrl) {
+      alert('Please configure Google Sheets in Admin page first')
       return
     }
 
-    const instructions = `
-To import this data to Google Sheets:
+    if (salesHistory.length === 0) {
+      alert('No sales data to sync')
+      return
+    }
 
-1. Download the CSV file first (click "Download CSV" button)
-2. Open Google Sheets (sheets.google.com)
-3. Create a new spreadsheet or open existing one
-4. Go to File → Import
-5. Upload the CSV file
-6. Choose "Replace current sheet" or "Insert new sheet"
-7. Click "Import data"
-
-Or copy the data below and paste directly into Google Sheets:
-    `.trim()
-
-    alert(instructions)
-    handleExportCSV()
+    setIsSyncing(true)
+    try {
+      const unsyncedSales = googleSheets.getUnsyncedSales(salesHistory)
+      const result = await googleSheets.syncSales(unsyncedSales)
+      
+      if (result.success) {
+        alert(`✅ Sync successful! ${result.syncedCount} new sales synced`)
+        const status = googleSheets.getSyncStatus()
+        setSyncStatus(status)
+      } else {
+        alert(`❌ Sync failed: ${result.message}`)
+      }
+    } catch (error) {
+      alert(`❌ Sync error: ${error.message}`)
+    } finally {
+      setIsSyncing(false)
+    }
   }
 
   const topProducts = () => {
@@ -189,6 +205,70 @@ Or copy the data below and paste directly into Google Sheets:
         </div>
       )}
 
+      {/* Google Sheets Sync Status */}
+      <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="font-bold flex items-center gap-2">
+            <Cloud className="w-5 h-5" />
+            Google Sheets Sync
+          </h3>
+          {syncStatus.status === 'synced' && (
+            <span className="flex items-center gap-1 text-green-600 text-sm">
+              <Check className="w-4 h-4" />
+              Synced
+            </span>
+          )}
+          {syncStatus.status === 'connected' && (
+            <span className="flex items-center gap-1 text-blue-600 text-sm">
+              <AlertCircle className="w-4 h-4" />
+              Connected
+            </span>
+          )}
+          {syncStatus.status === 'disconnected' && (
+            <span className="flex items-center gap-1 text-gray-600 text-sm">
+              <AlertCircle className="w-4 h-4" />
+              Not Connected
+            </span>
+          )}
+          {syncStatus.status === 'error' && (
+            <span className="flex items-center gap-1 text-red-600 text-sm">
+              <AlertCircle className="w-4 h-4" />
+              Error
+            </span>
+          )}
+        </div>
+        
+        {syncStatus.lastSyncTime && (
+          <p className="text-sm text-gray-600 mb-3">
+            Last sync: {new Date(syncStatus.lastSyncTime).toLocaleString()}
+          </p>
+        )}
+
+        <button
+          onClick={handleSyncGoogleSheets}
+          disabled={isSyncing || !syncStatus.scriptUrl}
+          className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 tap-highlight-transparent active:scale-95 disabled:opacity-50 mb-3"
+        >
+          {isSyncing ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <span>Syncing...</span>
+            </>
+          ) : (
+            <>
+              <RefreshCw className="w-5 h-5" />
+              <span>Sync to Google Sheets</span>
+            </>
+          )}
+        </button>
+
+        {!syncStatus.scriptUrl && (
+          <p className="text-xs text-gray-600 text-center">
+            Configure Google Sheets in Admin page first
+          </p>
+        )}
+      </div>
+
       <div className="space-y-3">
         <button
           onClick={handleExportCSV}
@@ -197,19 +277,11 @@ Or copy the data below and paste directly into Google Sheets:
           <Download className="w-5 h-5" />
           <span>Download CSV</span>
         </button>
-
-        <button
-          onClick={handleExportGoogleSheets}
-          className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold flex items-center justify-center space-x-2 tap-highlight-transparent active:scale-95"
-        >
-          <Download className="w-5 h-5" />
-          <span>Export to Google Sheets</span>
-        </button>
       </div>
 
       <div className="mt-4 p-4 bg-blue-50 rounded-lg text-sm text-gray-700">
-        <p className="font-semibold mb-1">💡 Tip:</p>
-        <p>Export your sales data and import it into Google Sheets to track your business performance over time!</p>
+        <p className="font-semibold mb-1">💡 Google Sheets Sync:</p>
+        <p>Configure Google Sheets in Admin page to automatically sync all your sales data. No more manual exports!</p>
       </div>
     </div>
   )
