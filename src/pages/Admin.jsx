@@ -228,6 +228,47 @@ const Admin = () => {
     }
   }
 
+  const handleAddItemToProduct = (product) => {
+    const itemName = prompt(`Add new item/variety for "${product.name}":`)
+    if (!itemName) return
+
+    let newItem
+    if (product.hasPacketLoose) {
+      const packetPrice = prompt(`Packet price for "${itemName}" (₹):`)
+      const loosePrice = prompt(`Loose price for "${itemName}" (₹):`)
+      if (!packetPrice || !loosePrice) return
+
+      newItem = {
+        id: Math.max(...products.map(p => p.id), 0) + 1,
+        name: `${product.name} - ${itemName}`,
+        category: product.category,
+        hasPacketLoose: true,
+        packetPrice: parseFloat(packetPrice),
+        packetUnit: product.packetUnit,
+        loosePrice: parseFloat(loosePrice),
+        looseUnit: product.looseUnit,
+        image: product.image
+      }
+    } else {
+      const price = prompt(`Price for "${itemName}" (₹):`)
+      if (!price) return
+
+      newItem = {
+        id: Math.max(...products.map(p => p.id), 0) + 1,
+        name: `${product.name} - ${itemName}`,
+        price: parseFloat(price),
+        unit: product.unit,
+        category: product.category,
+        image: product.image
+      }
+    }
+
+    const updatedProducts = [...products, newItem]
+    setProducts(updatedProducts)
+    saveProducts(updatedProducts, categories)
+    alert(`✅ Added "${itemName}" to ${product.name}!`)
+  }
+
   const handlePriceChange = (productId, change) => {
     const updatedProducts = products.map(p => {
       if (p.id === productId) {
@@ -394,18 +435,20 @@ const Admin = () => {
               className="w-full px-3 py-2 border rounded-lg"
             />
             
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="hasPacketLoose"
-                checked={newProduct.hasPacketLoose}
-                onChange={(e) => setNewProduct({ ...newProduct, hasPacketLoose: e.target.checked })}
-                className="w-4 h-4"
-              />
-              <label htmlFor="hasPacketLoose" className="text-sm font-medium">
-                Sell as both Packet and Loose
-              </label>
-            </div>
+            {(newProduct.category === 'rice' || newProduct.category?.includes('oil')) && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="hasPacketLoose"
+                  checked={newProduct.hasPacketLoose}
+                  onChange={(e) => setNewProduct({ ...newProduct, hasPacketLoose: e.target.checked })}
+                  className="w-4 h-4"
+                />
+                <label htmlFor="hasPacketLoose" className="text-sm font-medium">
+                  Sell as both Packet and Loose
+                </label>
+              </div>
+            )}
 
             {newProduct.hasPacketLoose ? (
               <>
@@ -421,7 +464,7 @@ const Admin = () => {
                     />
                     <input
                       type="text"
-                      placeholder="Packet Unit (e.g., 25 kg)"
+                      placeholder={newProduct.category?.includes('oil') ? "Packet Unit (e.g., 20 packets)" : "Packet Unit (e.g., 25 kg)"}
                       value={newProduct.packetUnit}
                       onChange={(e) => setNewProduct({ ...newProduct, packetUnit: e.target.value })}
                       className="px-3 py-2 border rounded-lg"
@@ -441,7 +484,7 @@ const Admin = () => {
                     />
                     <input
                       type="text"
-                      placeholder="Loose Unit (e.g., 1 kg)"
+                      placeholder={newProduct.category?.includes('oil') ? "Loose Unit (e.g., 1 packet)" : "Loose Unit (e.g., 1 kg)"}
                       value={newProduct.looseUnit}
                       onChange={(e) => setNewProduct({ ...newProduct, looseUnit: e.target.value })}
                       className="px-3 py-2 border rounded-lg"
@@ -663,6 +706,16 @@ const Admin = () => {
                     </button>
                   </div>
                 )}
+                
+                <div className="flex items-center gap-2 pt-3 border-t">
+                  <span className="text-sm text-gray-600">Actions:</span>
+                  <button
+                    onClick={() => handleAddItemToProduct(product)}
+                    className="bg-green-500 text-white px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
+                  >
+                    Add New Item
+                  </button>
+                </div>
               </div>
             )}
           </div>
