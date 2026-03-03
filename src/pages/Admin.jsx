@@ -15,7 +15,12 @@ const Admin = () => {
     price: '',
     unit: '1 kg',
     category: 'rice',
-    image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400'
+    image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400',
+    hasPacketLoose: false,
+    packetPrice: '',
+    packetUnit: '25 kg',
+    loosePrice: '',
+    looseUnit: '1 kg'
   })
 
   // Google Sheets state
@@ -78,18 +83,45 @@ const Admin = () => {
   }
 
   const handleAddProduct = () => {
-    if (!newProduct.name || !newProduct.price) {
-      alert('Please fill in product name and price')
+    if (!newProduct.name) {
+      alert('Please fill in product name')
       return
     }
 
-    const product = {
-      id: Math.max(...products.map(p => p.id), 0) + 1,
-      name: newProduct.name,
-      price: parseFloat(newProduct.price),
-      unit: newProduct.unit,
-      category: newProduct.category,
-      image: newProduct.image
+    if (newProduct.hasPacketLoose) {
+      if (!newProduct.packetPrice || !newProduct.loosePrice) {
+        alert('Please fill in both packet and loose prices')
+        return
+      }
+    } else {
+      if (!newProduct.price) {
+        alert('Please fill in product price')
+        return
+      }
+    }
+
+    let product;
+    if (newProduct.hasPacketLoose) {
+      product = {
+        id: Math.max(...products.map(p => p.id), 0) + 1,
+        name: newProduct.name,
+        category: newProduct.category,
+        hasPacketLoose: true,
+        packetPrice: parseFloat(newProduct.packetPrice),
+        packetUnit: newProduct.packetUnit,
+        loosePrice: parseFloat(newProduct.loosePrice),
+        looseUnit: newProduct.looseUnit,
+        image: newProduct.image
+      }
+    } else {
+      product = {
+        id: Math.max(...products.map(p => p.id), 0) + 1,
+        name: newProduct.name,
+        price: parseFloat(newProduct.price),
+        unit: newProduct.unit,
+        category: newProduct.category,
+        image: newProduct.image
+      }
     }
 
     const updatedProducts = [...products, product]
@@ -101,7 +133,12 @@ const Admin = () => {
       price: '',
       unit: '1 kg',
       category: 'rice',
-      image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400'
+      image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400',
+      hasPacketLoose: false,
+      packetPrice: '',
+      packetUnit: '25 kg',
+      loosePrice: '',
+      looseUnit: '1 kg'
     })
     setShowAddForm(false)
   }
@@ -356,20 +393,81 @@ const Admin = () => {
               onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
               className="w-full px-3 py-2 border rounded-lg"
             />
-            <input
-              type="number"
-              placeholder="Price (₹)"
-              value={newProduct.price}
-              onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg"
-            />
-            <input
-              type="text"
-              placeholder="Unit (e.g., 1 kg, 1 liter)"
-              value={newProduct.unit}
-              onChange={(e) => setNewProduct({ ...newProduct, unit: e.target.value })}
-              className="w-full px-3 py-2 border rounded-lg"
-            />
+            
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="hasPacketLoose"
+                checked={newProduct.hasPacketLoose}
+                onChange={(e) => setNewProduct({ ...newProduct, hasPacketLoose: e.target.checked })}
+                className="w-4 h-4"
+              />
+              <label htmlFor="hasPacketLoose" className="text-sm font-medium">
+                Sell as both Packet and Loose
+              </label>
+            </div>
+
+            {newProduct.hasPacketLoose ? (
+              <>
+                <div className="border rounded-lg p-3">
+                  <p className="text-sm font-semibold mb-2">Packet Pricing</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="number"
+                      placeholder="Packet Price (₹)"
+                      value={newProduct.packetPrice}
+                      onChange={(e) => setNewProduct({ ...newProduct, packetPrice: e.target.value })}
+                      className="px-3 py-2 border rounded-lg"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Packet Unit (e.g., 25 kg)"
+                      value={newProduct.packetUnit}
+                      onChange={(e) => setNewProduct({ ...newProduct, packetUnit: e.target.value })}
+                      className="px-3 py-2 border rounded-lg"
+                    />
+                  </div>
+                </div>
+                
+                <div className="border rounded-lg p-3">
+                  <p className="text-sm font-semibold mb-2">Loose Pricing</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="number"
+                      placeholder="Loose Price (₹)"
+                      value={newProduct.loosePrice}
+                      onChange={(e) => setNewProduct({ ...newProduct, loosePrice: e.target.value })}
+                      className="px-3 py-2 border rounded-lg"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Loose Unit (e.g., 1 kg)"
+                      value={newProduct.looseUnit}
+                      onChange={(e) => setNewProduct({ ...newProduct, looseUnit: e.target.value })}
+                      className="px-3 py-2 border rounded-lg"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  placeholder="Price (₹)"
+                  value={newProduct.price}
+                  onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
+                  className="px-3 py-2 border rounded-lg"
+                />
+                <input
+                  type="text"
+                  placeholder="Unit (e.g., 1 kg)"
+                  value={newProduct.unit}
+                  onChange={(e) => setNewProduct({ ...newProduct, unit: e.target.value })}
+                  className="px-3 py-2 border rounded-lg"
+                />
+              </div>
+            )}
+            
             <select
               value={newProduct.category}
               onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
