@@ -241,16 +241,15 @@ const Admin = () => {
 
   const handleAddItemToCategory = (category) => {
     setSelectedCategoryForAdd(category)
-    const packetUnit = category.id?.includes('oil') ? '20 packets' : '25 kg'
-    const looseUnit = category.id?.includes('oil') ? '1 packet' : '1 kg'
     setNewItem({
       name: '',
       price: '',
       unit: '1 kg',
       packetPrice: '',
-      packetUnit: packetUnit,
+      packetUnit: '25 kg',
       loosePrice: '',
-      looseUnit: looseUnit
+      looseUnit: '1 kg',
+      packetOptions: []
     })
     setShowAddItemForm(true)
   }
@@ -283,6 +282,22 @@ const Admin = () => {
           ? 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400'
           : 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
       }
+    } else if (category.id === 'wheat') {
+      // For wheat, create packet options
+      const packetOptions = [
+        { size: '1 kg', price: parseFloat(newItem.price) || 50 },
+        { size: '5 kg', price: parseFloat(newItem.price) ? parseFloat(newItem.price) * 4.8 : 240 },
+        { size: '10 kg', price: parseFloat(newItem.price) ? parseFloat(newItem.price) * 9 : 450 }
+      ]
+
+      item = {
+        id: Math.max(...products.map(p => p.id), 0) + 1,
+        name: newItem.name,
+        category: category.id,
+        hasPacketOptions: true,
+        packetOptions: packetOptions,
+        image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
+      }
     } else {
       if (!newItem.price) {
         alert('Please fill in item price')
@@ -295,9 +310,7 @@ const Admin = () => {
         price: parseFloat(newItem.price),
         unit: newItem.unit,
         category: category.id,
-        image: category.id === 'wheat'
-          ? 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
-          : 'https://images.unsplash.com/photo-1598301164398-30ba2ae72a5e?w=400'
+        image: 'https://images.unsplash.com/photo-1598301164398-30ba2ae72a5e?w=400'
       }
     }
 
@@ -802,6 +815,13 @@ const Admin = () => {
                               <div className="text-sm text-gray-600">
                                 <p>Packet: ₹{product.packetPrice} / {product.packetUnit}</p>
                                 <p>Loose: ₹{product.loosePrice} / {product.looseUnit}</p>
+                              </div>
+                            ) : product.hasPacketOptions ? (
+                              <div className="text-sm text-gray-600">
+                                <p className="font-semibold">Packet Options:</p>
+                                {product.packetOptions.map((option, index) => (
+                                  <p key={index}>₹{option.price} / {option.size}</p>
+                                ))}
                               </div>
                             ) : (
                               <p className="text-sm text-gray-600">₹{product.price?.toFixed(2) || 0} / {product.unit || ''}</p>

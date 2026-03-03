@@ -10,9 +10,11 @@ const SalesEntry = () => {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [showConfirm, setShowConfirm] = useState(false)
   const [showPacketLooseModal, setShowPacketLooseModal] = useState(false)
+  const [showPacketOptionsModal, setShowPacketOptionsModal] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [packetQty, setPacketQty] = useState(0)
   const [looseQty, setLooseQty] = useState(0)
+  const [selectedPacketSize, setSelectedPacketSize] = useState('')
 
   const {
     currentSale,
@@ -69,10 +71,39 @@ const SalesEntry = () => {
       setPacketQty(0)
       setLooseQty(0)
       setShowPacketLooseModal(true)
+    } else if (product.hasPacketOptions) {
+      // Show modal for wheat packet size selection
+      setSelectedProduct(product)
+      setSelectedPacketSize('')
+      setShowPacketOptionsModal(true)
     } else {
       // Regular product - add directly
       addItemToSale(product, 1)
     }
+  }
+
+  const handlePacketOptionsConfirm = () => {
+    if (!selectedPacketSize) {
+      alert('Please select a packet size')
+      return
+    }
+
+    const selectedOption = selectedProduct.packetOptions.find(option => option.size === selectedPacketSize)
+    if (!selectedOption) return
+
+    const packetItem = {
+      ...selectedProduct,
+      id: `${selectedProduct.id}-${selectedPacketSize}`,
+      name: `${selectedProduct.name} (${selectedPacketSize})`,
+      price: selectedOption.price,
+      unit: selectedPacketSize,
+      saleType: 'packet'
+    }
+    addItemToSale(packetItem, 1)
+
+    setShowPacketOptionsModal(false)
+    setSelectedProduct(null)
+    setSelectedPacketSize('')
   }
 
   const handlePacketLooseConfirm = () => {
@@ -342,6 +373,48 @@ const SalesEntry = () => {
               </button>
               <button
                 onClick={handlePacketLooseConfirm}
+                className="flex-1 bg-primary text-white py-3 rounded-lg font-semibold tap-highlight-transparent"
+              >
+                Add to Sale
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Wheat Packet Options Modal */}
+      {showPacketOptionsModal && selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+            <h3 className="text-lg font-bold mb-4">Select Packet Size</h3>
+            <div className="space-y-2">
+              {selectedProduct.packetOptions.map((option, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedPacketSize(option.size)}
+                  className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${
+                    selectedPacketSize === option.size
+                      ? 'border-primary bg-primary/10'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">{option.size}</span>
+                    <span className="text-primary font-bold">₹{option.price}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowPacketOptionsModal(false)}
+                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold tap-highlight-transparent"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handlePacketOptionsConfirm}
                 className="flex-1 bg-primary text-white py-3 rounded-lg font-semibold tap-highlight-transparent"
               >
                 Add to Sale
