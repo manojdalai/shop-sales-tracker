@@ -228,26 +228,31 @@ const Admin = () => {
     }
   }
 
-  const handleAddItemToProduct = (product) => {
-    const itemName = prompt(`Add new item/variety for "${product.name}":`)
+  const handleAddItemToCategory = (category) => {
+    const itemName = prompt(`Add new item to "${category.name}":`)
     if (!itemName) return
 
     let newItem
-    if (product.hasPacketLoose) {
+    if (category.id === 'rice' || category.id?.includes('oil')) {
       const packetPrice = prompt(`Packet price for "${itemName}" (₹):`)
       const loosePrice = prompt(`Loose price for "${itemName}" (₹):`)
       if (!packetPrice || !loosePrice) return
 
+      const packetUnit = category.id?.includes('oil') ? '20 packets' : '25 kg'
+      const looseUnit = category.id?.includes('oil') ? '1 packet' : '1 kg'
+
       newItem = {
         id: Math.max(...products.map(p => p.id), 0) + 1,
-        name: `${product.name} - ${itemName}`,
-        category: product.category,
+        name: itemName,
+        category: category.id,
         hasPacketLoose: true,
         packetPrice: parseFloat(packetPrice),
-        packetUnit: product.packetUnit,
+        packetUnit: packetUnit,
         loosePrice: parseFloat(loosePrice),
-        looseUnit: product.looseUnit,
-        image: product.image
+        looseUnit: looseUnit,
+        image: category.id === 'rice' 
+          ? 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400'
+          : 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
       }
     } else {
       const price = prompt(`Price for "${itemName}" (₹):`)
@@ -255,18 +260,20 @@ const Admin = () => {
 
       newItem = {
         id: Math.max(...products.map(p => p.id), 0) + 1,
-        name: `${product.name} - ${itemName}`,
+        name: itemName,
         price: parseFloat(price),
-        unit: product.unit,
-        category: product.category,
-        image: product.image
+        unit: category.id === 'wheat' ? '1 kg' : '1 kg',
+        category: category.id,
+        image: category.id === 'wheat'
+          ? 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
+          : 'https://images.unsplash.com/photo-1598301164398-30ba2ae72a5e?w=400'
       }
     }
 
     const updatedProducts = [...products, newItem]
     setProducts(updatedProducts)
     saveProducts(updatedProducts, categories)
-    alert(`✅ Added "${itemName}" to ${product.name}!`)
+    alert(`✅ Added "${itemName}" to ${category.name}!`)
   }
 
   const handlePriceChange = (productId, change) => {
@@ -559,167 +566,177 @@ const Admin = () => {
         </div>
       </div>
 
-      <div className="space-y-3">
-        {filteredProducts.map(product => (
-          <div key={product.id} className="bg-white rounded-lg shadow-md p-4">
-            {editingProduct?.id === product.id ? (
-              <div className="space-y-3">
-                <input
-                  type="text"
-                  value={editingProduct.name}
-                  onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg font-semibold"
-                />
-                {editingProduct.hasPacketLoose ? (
-                  <>
-                    <div className="border rounded-lg p-3">
-                      <p className="text-sm font-semibold mb-2">Packet Pricing</p>
-                      <div className="flex gap-2">
-                        <input
-                          type="number"
-                          placeholder="Packet Price"
-                          value={editingProduct.packetPrice}
-                          onChange={(e) => setEditingProduct({ ...editingProduct, packetPrice: parseFloat(e.target.value) })}
-                          className="flex-1 px-3 py-2 border rounded-lg"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Unit"
-                          value={editingProduct.packetUnit}
-                          onChange={(e) => setEditingProduct({ ...editingProduct, packetUnit: e.target.value })}
-                          className="flex-1 px-3 py-2 border rounded-lg"
-                        />
-                      </div>
-                    </div>
-                    <div className="border rounded-lg p-3">
-                      <p className="text-sm font-semibold mb-2">Loose Pricing</p>
-                      <div className="flex gap-2">
-                        <input
-                          type="number"
-                          placeholder="Loose Price"
-                          value={editingProduct.loosePrice}
-                          onChange={(e) => setEditingProduct({ ...editingProduct, loosePrice: parseFloat(e.target.value) })}
-                          className="flex-1 px-3 py-2 border rounded-lg"
-                        />
-                        <input
-                          type="text"
-                          placeholder="Unit"
-                          value={editingProduct.looseUnit}
-                          onChange={(e) => setEditingProduct({ ...editingProduct, looseUnit: e.target.value })}
-                          className="flex-1 px-3 py-2 border rounded-lg"
-                        />
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      value={editingProduct.price || ''}
-                      onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })}
-                      className="flex-1 px-3 py-2 border rounded-lg"
-                      placeholder="Price"
-                    />
-                    <input
-                      type="text"
-                      value={editingProduct.unit || ''}
-                      onChange={(e) => setEditingProduct({ ...editingProduct, unit: e.target.value })}
-                      className="flex-1 px-3 py-2 border rounded-lg"
-                      placeholder="Unit"
-                    />
-                  </div>
-                )}
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleSaveEdit}
-                    className="flex-1 bg-primary text-white py-2 rounded-lg tap-highlight-transparent flex items-center justify-center gap-2"
-                  >
-                    <Save className="w-4 h-4" />
-                    Save
-                  </button>
-                  <button
-                    onClick={() => setEditingProduct(null)}
-                    className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg tap-highlight-transparent flex items-center justify-center gap-2"
-                  >
-                    <X className="w-4 h-4" />
-                    Cancel
-                  </button>
-                </div>
+      <div className="space-y-6">
+        {categories.filter(c => c.id !== 'all').map(category => {
+          const categoryProducts = filteredProducts.filter(p => p.category === category.id)
+          if (categoryProducts.length === 0) return null
+          
+          return (
+            <div key={category.id} className="bg-white rounded-lg shadow-md p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-lg">{category.name}</h3>
+                <button
+                  onClick={() => handleAddItemToCategory(category)}
+                  className="bg-green-500 text-white px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
+                >
+                  Add New Item
+                </button>
               </div>
-            ) : (
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex-1">
-                    <p className="font-semibold">{product.name}</p>
-                    {product.hasPacketLoose ? (
-                      <div className="text-sm text-gray-600">
-                        <p>Packet: ₹{product.packetPrice} / {product.packetUnit}</p>
-                        <p>Loose: ₹{product.loosePrice} / {product.looseUnit}</p>
+              
+              <div className="space-y-3">
+                {categoryProducts.map(product => (
+                  <div key={product.id} className="border rounded-lg p-3">
+                    {editingProduct?.id === product.id ? (
+                      <div className="space-y-3">
+                        <input
+                          type="text"
+                          value={editingProduct.name}
+                          onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
+                          className="w-full px-3 py-2 border rounded-lg font-semibold"
+                        />
+                        {editingProduct.hasPacketLoose ? (
+                          <>
+                            <div className="border rounded-lg p-3">
+                              <p className="text-sm font-semibold mb-2">Packet Pricing</p>
+                              <div className="flex gap-2">
+                                <input
+                                  type="number"
+                                  placeholder="Packet Price"
+                                  value={editingProduct.packetPrice}
+                                  onChange={(e) => setEditingProduct({ ...editingProduct, packetPrice: parseFloat(e.target.value) })}
+                                  className="flex-1 px-3 py-2 border rounded-lg"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Unit"
+                                  value={editingProduct.packetUnit}
+                                  onChange={(e) => setEditingProduct({ ...editingProduct, packetUnit: e.target.value })}
+                                  className="flex-1 px-3 py-2 border rounded-lg"
+                                />
+                              </div>
+                            </div>
+                            <div className="border rounded-lg p-3">
+                              <p className="text-sm font-semibold mb-2">Loose Pricing</p>
+                              <div className="flex gap-2">
+                                <input
+                                  type="number"
+                                  placeholder="Loose Price"
+                                  value={editingProduct.loosePrice}
+                                  onChange={(e) => setEditingProduct({ ...editingProduct, loosePrice: parseFloat(e.target.value) })}
+                                  className="flex-1 px-3 py-2 border rounded-lg"
+                                />
+                                <input
+                                  type="text"
+                                  placeholder="Unit"
+                                  value={editingProduct.looseUnit}
+                                  onChange={(e) => setEditingProduct({ ...editingProduct, looseUnit: e.target.value })}
+                                  className="flex-1 px-3 py-2 border rounded-lg"
+                                />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="flex gap-2">
+                            <input
+                              type="number"
+                              value={editingProduct.price || ''}
+                              onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })}
+                              className="flex-1 px-3 py-2 border rounded-lg"
+                              placeholder="Price"
+                            />
+                            <input
+                              type="text"
+                              value={editingProduct.unit || ''}
+                              onChange={(e) => setEditingProduct({ ...editingProduct, unit: e.target.value })}
+                              className="flex-1 px-3 py-2 border rounded-lg"
+                              placeholder="Unit"
+                            />
+                          </div>
+                        )}
+                        <div className="flex gap-2">
+                          <button
+                            onClick={handleSaveEdit}
+                            className="flex-1 bg-primary text-white py-2 rounded-lg tap-highlight-transparent flex items-center justify-center gap-2"
+                          >
+                            <Save className="w-4 h-4" />
+                            Save
+                          </button>
+                          <button
+                            onClick={() => setEditingProduct(null)}
+                            className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg tap-highlight-transparent flex items-center justify-center gap-2"
+                          >
+                            <X className="w-4 h-4" />
+                            Cancel
+                          </button>
+                        </div>
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-600">₹{product.price?.toFixed(2) || 0} / {product.unit || ''}</p>
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <p className="font-semibold">{product.name}</p>
+                            {product.hasPacketLoose ? (
+                              <div className="text-sm text-gray-600">
+                                <p>Packet: ₹{product.packetPrice} / {product.packetUnit}</p>
+                                <p>Loose: ₹{product.loosePrice} / {product.looseUnit}</p>
+                              </div>
+                            ) : (
+                              <p className="text-sm text-gray-600">₹{product.price?.toFixed(2) || 0} / {product.unit || ''}</p>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleEditProduct(product)}
+                              className="text-blue-500 p-2 tap-highlight-transparent"
+                            >
+                              <Edit2 className="w-5 h-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProduct(product.id)}
+                              className="text-red-500 p-2 tap-highlight-transparent"
+                            >
+                              <Trash2 className="w-5 h-5" />
+                            </button>
+                          </div>
+                        </div>
+                        
+                        {!product.hasPacketLoose && (
+                          <div className="flex items-center gap-2 pt-3 border-t">
+                            <span className="text-sm text-gray-600">Quick Price:</span>
+                            <button
+                              onClick={() => handlePriceChange(product.id, -5)}
+                              className="bg-red-100 text-red-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
+                            >
+                              -₹5
+                            </button>
+                            <button
+                              onClick={() => handlePriceChange(product.id, -1)}
+                              className="bg-red-100 text-red-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
+                            >
+                              -₹1
+                            </button>
+                            <button
+                              onClick={() => handlePriceChange(product.id, 1)}
+                              className="bg-green-100 text-green-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
+                            >
+                              +₹1
+                            </button>
+                            <button
+                              onClick={() => handlePriceChange(product.id, 5)}
+                              className="bg-green-100 text-green-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
+                            >
+                              +₹5
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     )}
-                    <p className="text-xs text-gray-500 capitalize">{product.category}</p>
                   </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEditProduct(product)}
-                      className="text-blue-500 p-2 tap-highlight-transparent"
-                    >
-                      <Edit2 className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteProduct(product.id)}
-                      className="text-red-500 p-2 tap-highlight-transparent"
-                    >
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-                
-                {!product.hasPacketLoose && (
-                  <div className="flex items-center gap-2 pt-3 border-t">
-                    <span className="text-sm text-gray-600">Quick Price:</span>
-                    <button
-                      onClick={() => handlePriceChange(product.id, -5)}
-                      className="bg-red-100 text-red-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
-                    >
-                      -₹5
-                    </button>
-                    <button
-                      onClick={() => handlePriceChange(product.id, -1)}
-                      className="bg-red-100 text-red-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
-                    >
-                      -₹1
-                    </button>
-                    <button
-                      onClick={() => handlePriceChange(product.id, 1)}
-                      className="bg-green-100 text-green-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
-                    >
-                      +₹1
-                    </button>
-                    <button
-                      onClick={() => handlePriceChange(product.id, 5)}
-                      className="bg-green-100 text-green-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
-                    >
-                      +₹5
-                    </button>
-                  </div>
-                )}
-                
-                <div className="flex items-center gap-2 pt-3 border-t">
-                  <span className="text-sm text-gray-600">Actions:</span>
-                  <button
-                    onClick={() => handleAddItemToProduct(product)}
-                    className="bg-green-500 text-white px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
-                  >
-                    Add New Item
-                  </button>
-                </div>
+                ))}
               </div>
-            )}
-          </div>
-        ))}
+            </div>
+          )
+        })}
       </div>
 
       {filteredProducts.length === 0 && (
