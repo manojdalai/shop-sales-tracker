@@ -76,66 +76,23 @@ export const products = [
   { id: 12, name: 'Kabuli Chana', price: 140, unit: '1 kg', category: 'pulses', image: 'https://images.unsplash.com/photo-1596797882870-8c33deeac224?w=400' },
   { id: 13, name: 'Rajma (Kidney Beans)', price: 150, unit: '1 kg', category: 'pulses', image: 'https://images.unsplash.com/photo-1596797882870-8c33deeac224?w=400' },
 
-  // Wheat Varieties - Dual pricing (packet & loose)
-  { 
-    id: 14, 
-    name: 'Whole Wheat Atta', 
-    category: 'wheat',
-    hasPacketLoose: true,
-    packetPrice: 950,
-    packetUnit: '25 kg',
-    loosePrice: 42,
-    looseUnit: '1 kg',
-    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
-  },
-  { 
-    id: 15, 
-    name: 'Sharbati Wheat Atta', 
-    category: 'wheat',
-    hasPacketLoose: true,
-    packetPrice: 1200,
-    packetUnit: '25 kg',
-    loosePrice: 52,
-    looseUnit: '1 kg',
-    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
-  },
-  { 
-    id: 16, 
-    name: 'Lokwan Wheat Atta', 
-    category: 'wheat',
-    hasPacketLoose: true,
-    packetPrice: 1050,
-    packetUnit: '25 kg',
-    loosePrice: 47,
-    looseUnit: '1 kg',
-    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
-  },
-  { 
-    id: 17, 
-    name: 'Multigrain Atta', 
-    category: 'wheat',
-    hasPacketLoose: true,
-    packetPrice: 1450,
-    packetUnit: '25 kg',
-    loosePrice: 62,
-    looseUnit: '1 kg',
-    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
-  },
-  { 
-    id: 18, 
-    name: 'Chakki Fresh Atta', 
-    category: 'wheat',
-    hasPacketLoose: true,
-    packetPrice: 1150,
-    packetUnit: '25 kg',
-    loosePrice: 50,
-    looseUnit: '1 kg',
-    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
-  },
+  // Wheat Varieties - Multiple packet sizes (1kg, 5kg, 10kg)
+  { id: 14, name: 'Whole Wheat Atta - 1kg', price: 42, unit: '1 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  { id: 15, name: 'Whole Wheat Atta - 5kg', price: 200, unit: '5 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  { id: 16, name: 'Whole Wheat Atta - 10kg', price: 380, unit: '10 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  { id: 17, name: 'Sharbati Wheat Atta - 1kg', price: 52, unit: '1 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  { id: 18, name: 'Sharbati Wheat Atta - 5kg', price: 250, unit: '5 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  { id: 19, name: 'Sharbati Wheat Atta - 10kg', price: 480, unit: '10 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  { id: 20, name: 'Lokwan Wheat Atta - 1kg', price: 47, unit: '1 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  { id: 21, name: 'Lokwan Wheat Atta - 5kg', price: 225, unit: '5 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  { id: 22, name: 'Lokwan Wheat Atta - 10kg', price: 430, unit: '10 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  { id: 23, name: 'Multigrain Atta - 1kg', price: 62, unit: '1 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  { id: 24, name: 'Multigrain Atta - 5kg', price: 300, unit: '5 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  { id: 25, name: 'Multigrain Atta - 10kg', price: 580, unit: '10 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
 
   // Refined Oil Varieties - Dual pricing (packet & loose)
   { 
-    id: 19, 
+    id: 26, 
     name: 'Sunflower Oil', 
     category: 'refined-oil',
     hasPacketLoose: true,
@@ -146,7 +103,7 @@ export const products = [
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
   },
   { 
-    id: 20, 
+    id: 27, 
     name: 'Soybean Oil', 
     category: 'refined-oil',
     hasPacketLoose: true,
@@ -157,7 +114,7 @@ export const products = [
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
   },
   { 
-    id: 21, 
+    id: 28, 
     name: 'Rice Bran Oil', 
     category: 'refined-oil',
     hasPacketLoose: true,
@@ -168,7 +125,7 @@ export const products = [
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
   },
   { 
-    id: 22, 
+    id: 29, 
     name: 'Groundnut Oil', 
     category: 'refined-oil',
     hasPacketLoose: true,
@@ -179,7 +136,7 @@ export const products = [
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
   },
   { 
-    id: 23, 
+    id: 30, 
     name: 'Palm Oil', 
     category: 'refined-oil',
     hasPacketLoose: true,
@@ -192,7 +149,7 @@ export const products = [
 
   // Mustard Oil Varieties - Dual pricing (packet & loose)
   { 
-    id: 24, 
+    id: 31, 
     name: 'Kachi Ghani Mustard Oil', 
     category: 'mustard-oil',
     hasPacketLoose: true,
@@ -203,7 +160,7 @@ export const products = [
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
   },
   { 
-    id: 25, 
+    id: 32, 
     name: 'Pure Mustard Oil', 
     category: 'mustard-oil',
     hasPacketLoose: true,
@@ -214,7 +171,7 @@ export const products = [
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
   },
   { 
-    id: 26, 
+    id: 33, 
     name: 'Organic Mustard Oil', 
     category: 'mustard-oil',
     hasPacketLoose: true,
@@ -225,7 +182,7 @@ export const products = [
     image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
   },
   { 
-    id: 27, 
+    id: 34, 
     name: 'Double Filtered Mustard Oil', 
     category: 'mustard-oil',
     hasPacketLoose: true,
