@@ -3,6 +3,7 @@ import Header from './components/Header'
 import SalesEntry from './pages/SalesEntry'
 import SalesHistory from './pages/SalesHistory'
 import Reports from './pages/Reports'
+import Admin from './pages/Admin'
 import { SalesProvider } from './context/SalesContext'
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
               <Route path="/" element={<SalesEntry />} />
               <Route path="/history" element={<SalesHistory />} />
               <Route path="/reports" element={<Reports />} />
+              <Route path="/admin" element={<Admin />} />
             </Routes>
           </main>
         </div>

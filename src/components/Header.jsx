@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { ShoppingCart, History, BarChart3, Store } from 'lucide-react'
+import { ShoppingCart, History, BarChart3, Store, Settings } from 'lucide-react'
 import { useSales } from '../context/SalesContext'
 
 const Header = () => {
@@ -15,7 +15,7 @@ const Header = () => {
             <Link to="/" className="flex items-center space-x-2">
               <Store className="w-7 h-7" />
               <div>
-                <h1 className="text-xl font-bold">My Shop</h1>
+                <h1 className="text-xl font-bold">Maa Annapurna Store</h1>
                 <p className="text-xs text-green-100">Today: ₹{getTodaysTotal().toFixed(2)}</p>
               </div>
             </Link>
@@ -56,6 +56,15 @@ const Header = () => {
           >
             <BarChart3 className="w-6 h-6" />
             <span className="text-xs mt-1">Reports</span>
+          </Link>
+          <Link
+            to="/admin"
+            className={`flex flex-col items-center justify-center flex-1 h-full tap-highlight-transparent ${
+              location.pathname === '/admin' ? 'text-primary' : 'text-gray-600'
+            }`}
+          >
+            <Settings className="w-6 h-6" />
+            <span className="text-xs mt-1">Admin</span>
           </Link>
         </div>
       </nav>

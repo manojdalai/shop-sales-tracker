@@ -29,8 +29,17 @@ const SalesEntry = () => {
   }, [searchQuery, selectedCategory, products])
 
   const fetchProducts = async () => {
-    setProducts(productList)
-    setFilteredProducts(productList)
+    // Try to load from localStorage (managed by Admin)
+    const stored = localStorage.getItem('adminProducts')
+    if (stored) {
+      const data = JSON.parse(stored)
+      setProducts(data.products)
+      setFilteredProducts(data.products)
+    } else {
+      // Fallback to default products
+      setProducts(productList)
+      setFilteredProducts(productList)
+    }
   }
 
   const filterProducts = () => {
