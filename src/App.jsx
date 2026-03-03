@@ -9,7 +9,7 @@ import { SalesProvider } from './context/SalesContext'
 function App() {
   return (
     <SalesProvider>
-      <Router>
+      <Router basename="/shop-sales-tracker">
         <div className="min-h-screen bg-gray-50">
           <Header />
           <main className="pb-20">
