@@ -25,18 +25,25 @@ class GoogleSheetsService {
 
     try {
       const url = `${this.scriptUrl}?action=testConnection&t=${Date.now()}`;
+      console.log('Testing connection to:', url);
+      
       const response = await fetch(url, {
         method: 'GET',
+        mode: 'cors',
         headers: {
           'Content-Type': 'application/json',
         }
       });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const result = await response.json();
+      console.log('Response result:', result);
       
       if (result.status === 'success') {
         this.syncStatus = 'connected';
@@ -50,6 +57,7 @@ class GoogleSheetsService {
         throw new Error(result.message || 'Connection failed');
       }
     } catch (error) {
+      console.error('Connection test error:', error);
       this.syncStatus = 'error';
       localStorage.setItem('syncStatus', 'error');
       return { 
