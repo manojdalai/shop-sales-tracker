@@ -224,20 +224,63 @@ const Admin = () => {
                   onChange={(e) => setEditingProduct({ ...editingProduct, name: e.target.value })}
                   className="w-full px-3 py-2 border rounded-lg font-semibold"
                 />
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    value={editingProduct.price}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })}
-                    className="flex-1 px-3 py-2 border rounded-lg"
-                  />
-                  <input
-                    type="text"
-                    value={editingProduct.unit}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, unit: e.target.value })}
-                    className="flex-1 px-3 py-2 border rounded-lg"
-                  />
-                </div>
+                {editingProduct.hasPacketLoose ? (
+                  <>
+                    <div className="border rounded-lg p-3">
+                      <p className="text-sm font-semibold mb-2">Packet Pricing</p>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          placeholder="Packet Price"
+                          value={editingProduct.packetPrice}
+                          onChange={(e) => setEditingProduct({ ...editingProduct, packetPrice: parseFloat(e.target.value) })}
+                          className="flex-1 px-3 py-2 border rounded-lg"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Unit"
+                          value={editingProduct.packetUnit}
+                          onChange={(e) => setEditingProduct({ ...editingProduct, packetUnit: e.target.value })}
+                          className="flex-1 px-3 py-2 border rounded-lg"
+                        />
+                      </div>
+                    </div>
+                    <div className="border rounded-lg p-3">
+                      <p className="text-sm font-semibold mb-2">Loose Pricing</p>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          placeholder="Loose Price"
+                          value={editingProduct.loosePrice}
+                          onChange={(e) => setEditingProduct({ ...editingProduct, loosePrice: parseFloat(e.target.value) })}
+                          className="flex-1 px-3 py-2 border rounded-lg"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Unit"
+                          value={editingProduct.looseUnit}
+                          onChange={(e) => setEditingProduct({ ...editingProduct, looseUnit: e.target.value })}
+                          className="flex-1 px-3 py-2 border rounded-lg"
+                        />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      value={editingProduct.price}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })}
+                      className="flex-1 px-3 py-2 border rounded-lg"
+                    />
+                    <input
+                      type="text"
+                      value={editingProduct.unit}
+                      onChange={(e) => setEditingProduct({ ...editingProduct, unit: e.target.value })}
+                      className="flex-1 px-3 py-2 border rounded-lg"
+                    />
+                  </div>
+                )}
                 <div className="flex gap-2">
                   <button
                     onClick={handleSaveEdit}
@@ -260,7 +303,14 @@ const Admin = () => {
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex-1">
                     <p className="font-semibold">{product.name}</p>
-                    <p className="text-sm text-gray-600">₹{product.price.toFixed(2)} / {product.unit}</p>
+                    {product.hasPacketLoose ? (
+                      <div className="text-sm text-gray-600">
+                        <p>Packet: ₹{product.packetPrice} / {product.packetUnit}</p>
+                        <p>Loose: ₹{product.loosePrice} / {product.looseUnit}</p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-600">₹{product.price.toFixed(2)} / {product.unit}</p>
+                    )}
                     <p className="text-xs text-gray-500 capitalize">{product.category}</p>
                   </div>
                   <div className="flex gap-2">
@@ -279,33 +329,35 @@ const Admin = () => {
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-2 pt-3 border-t">
-                  <span className="text-sm text-gray-600">Quick Price:</span>
-                  <button
-                    onClick={() => handlePriceChange(product.id, -5)}
-                    className="bg-red-100 text-red-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
-                  >
-                    -₹5
-                  </button>
-                  <button
-                    onClick={() => handlePriceChange(product.id, -1)}
-                    className="bg-red-100 text-red-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
-                  >
-                    -₹1
-                  </button>
-                  <button
-                    onClick={() => handlePriceChange(product.id, 1)}
-                    className="bg-green-100 text-green-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
-                  >
-                    +₹1
-                  </button>
-                  <button
-                    onClick={() => handlePriceChange(product.id, 5)}
-                    className="bg-green-100 text-green-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
-                  >
-                    +₹5
-                  </button>
-                </div>
+                {!product.hasPacketLoose && (
+                  <div className="flex items-center gap-2 pt-3 border-t">
+                    <span className="text-sm text-gray-600">Quick Price:</span>
+                    <button
+                      onClick={() => handlePriceChange(product.id, -5)}
+                      className="bg-red-100 text-red-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
+                    >
+                      -₹5
+                    </button>
+                    <button
+                      onClick={() => handlePriceChange(product.id, -1)}
+                      className="bg-red-100 text-red-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
+                    >
+                      -₹1
+                    </button>
+                    <button
+                      onClick={() => handlePriceChange(product.id, 1)}
+                      className="bg-green-100 text-green-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
+                    >
+                      +₹1
+                    </button>
+                    <button
+                      onClick={() => handlePriceChange(product.id, 5)}
+                      className="bg-green-100 text-green-600 px-3 py-1 rounded tap-highlight-transparent text-sm font-semibold"
+                    >
+                      +₹5
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
