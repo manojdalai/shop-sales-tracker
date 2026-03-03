@@ -10,6 +10,8 @@ const Admin = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [editingProduct, setEditingProduct] = useState(null)
   const [showAddForm, setShowAddForm] = useState(false)
+  const [showAddItemForm, setShowAddItemForm] = useState(false)
+  const [selectedCategoryForAdd, setSelectedCategoryForAdd] = useState(null)
   const [newProduct, setNewProduct] = useState({
     name: '',
     price: '',
@@ -17,6 +19,15 @@ const Admin = () => {
     category: 'rice',
     image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400',
     hasPacketLoose: false,
+    packetPrice: '',
+    packetUnit: '25 kg',
+    loosePrice: '',
+    looseUnit: '1 kg'
+  })
+  const [newItem, setNewItem] = useState({
+    name: '',
+    price: '',
+    unit: '1 kg',
     packetPrice: '',
     packetUnit: '25 kg',
     loosePrice: '',
@@ -229,40 +240,60 @@ const Admin = () => {
   }
 
   const handleAddItemToCategory = (category) => {
-    const itemName = prompt(`Add new item to "${category.name}":`)
-    if (!itemName) return
+    setSelectedCategoryForAdd(category)
+    const packetUnit = category.id?.includes('oil') ? '20 packets' : '25 kg'
+    const looseUnit = category.id?.includes('oil') ? '1 packet' : '1 kg'
+    setNewItem({
+      name: '',
+      price: '',
+      unit: '1 kg',
+      packetPrice: '',
+      packetUnit: packetUnit,
+      loosePrice: '',
+      looseUnit: looseUnit
+    })
+    setShowAddItemForm(true)
+  }
 
-    let newItem
+  const handleSaveNewItem = () => {
+    if (!newItem.name) {
+      alert('Please fill in item name')
+      return
+    }
+
+    const category = selectedCategoryForAdd
+    let item
+
     if (category.id === 'rice' || category.id?.includes('oil')) {
-      const packetPrice = prompt(`Packet price for "${itemName}" (₹):`)
-      const loosePrice = prompt(`Loose price for "${itemName}" (₹):`)
-      if (!packetPrice || !loosePrice) return
+      if (!newItem.packetPrice || !newItem.loosePrice) {
+        alert('Please fill in both packet and loose prices')
+        return
+      }
 
-      const packetUnit = category.id?.includes('oil') ? '20 packets' : '25 kg'
-      const looseUnit = category.id?.includes('oil') ? '1 packet' : '1 kg'
-
-      newItem = {
+      item = {
         id: Math.max(...products.map(p => p.id), 0) + 1,
-        name: itemName,
+        name: newItem.name,
         category: category.id,
         hasPacketLoose: true,
-        packetPrice: parseFloat(packetPrice),
-        packetUnit: packetUnit,
-        loosePrice: parseFloat(loosePrice),
-        looseUnit: looseUnit,
+        packetPrice: parseFloat(newItem.packetPrice),
+        packetUnit: newItem.packetUnit,
+        loosePrice: parseFloat(newItem.loosePrice),
+        looseUnit: newItem.looseUnit,
         image: category.id === 'rice' 
           ? 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400'
           : 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
       }
     } else {
-      const price = prompt(`Price for "${itemName}" (₹):`)
-      if (!price) return
+      if (!newItem.price) {
+        alert('Please fill in item price')
+        return
+      }
 
-      newItem = {
+      item = {
         id: Math.max(...products.map(p => p.id), 0) + 1,
-        name: itemName,
-        price: parseFloat(price),
-        unit: category.id === 'wheat' ? '1 kg' : '1 kg',
+        name: newItem.name,
+        price: parseFloat(newItem.price),
+        unit: newItem.unit,
         category: category.id,
         image: category.id === 'wheat'
           ? 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
@@ -270,10 +301,11 @@ const Admin = () => {
       }
     }
 
-    const updatedProducts = [...products, newItem]
+    const updatedProducts = [...products, item]
     setProducts(updatedProducts)
     saveProducts(updatedProducts, categories)
-    alert(`✅ Added "${itemName}" to ${category.name}!`)
+    setShowAddItemForm(false)
+    setSelectedCategoryForAdd(null)
   }
 
   const handlePriceChange = (productId, change) => {
@@ -533,6 +565,97 @@ const Admin = () => {
             >
               Add Product
             </button>
+          </div>
+        </div>
+      )}
+
+      {showAddItemForm && selectedCategoryForAdd && (
+        <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+          <h3 className="font-bold mb-3">Add New Item to {selectedCategoryForAdd.name}</h3>
+          <div className="space-y-3">
+            <input
+              type="text"
+              placeholder="Item Name"
+              value={newItem.name}
+              onChange={(e) => setNewItem({ ...newItem, name: e.target.value })}
+              className="w-full px-3 py-2 border rounded-lg"
+            />
+            
+            {(selectedCategoryForAdd.id === 'rice' || selectedCategoryForAdd.id?.includes('oil')) ? (
+              <>
+                <div className="border rounded-lg p-3">
+                  <p className="text-sm font-semibold mb-2">Packet Pricing</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="number"
+                      placeholder="Packet Price (₹)"
+                      value={newItem.packetPrice}
+                      onChange={(e) => setNewItem({ ...newItem, packetPrice: e.target.value })}
+                      className="px-3 py-2 border rounded-lg"
+                    />
+                    <input
+                      type="text"
+                      placeholder={newItem.packetUnit}
+                      value={newItem.packetUnit}
+                      onChange={(e) => setNewItem({ ...newItem, packetUnit: e.target.value })}
+                      className="px-3 py-2 border rounded-lg"
+                    />
+                  </div>
+                </div>
+                
+                <div className="border rounded-lg p-3">
+                  <p className="text-sm font-semibold mb-2">Loose Pricing</p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="number"
+                      placeholder="Loose Price (₹)"
+                      value={newItem.loosePrice}
+                      onChange={(e) => setNewItem({ ...newItem, loosePrice: e.target.value })}
+                      className="px-3 py-2 border rounded-lg"
+                    />
+                    <input
+                      type="text"
+                      placeholder={newItem.looseUnit}
+                      value={newItem.looseUnit}
+                      onChange={(e) => setNewItem({ ...newItem, looseUnit: e.target.value })}
+                      className="px-3 py-2 border rounded-lg"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <input
+                  type="number"
+                  placeholder="Price (₹)"
+                  value={newItem.price}
+                  onChange={(e) => setNewItem({ ...newItem, price: e.target.value })}
+                  className="px-3 py-2 border rounded-lg"
+                />
+                <input
+                  type="text"
+                  placeholder="Unit (e.g., 1 kg)"
+                  value={newItem.unit}
+                  onChange={(e) => setNewItem({ ...newItem, unit: e.target.value })}
+                  className="px-3 py-2 border rounded-lg"
+                />
+              </div>
+            )}
+            
+            <div className="flex gap-2">
+              <button
+                onClick={handleSaveNewItem}
+                className="flex-1 bg-primary text-white py-2 rounded-lg font-semibold tap-highlight-transparent"
+              >
+                Add Item
+              </button>
+              <button
+                onClick={() => setShowAddItemForm(false)}
+                className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg font-semibold tap-highlight-transparent"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
