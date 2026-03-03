@@ -9,6 +9,10 @@ const SalesEntry = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [showConfirm, setShowConfirm] = useState(false)
+  const [showPacketLooseModal, setShowPacketLooseModal] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [packetQty, setPacketQty] = useState(0)
+  const [looseQty, setLooseQty] = useState(0)
 
   const {
     currentSale,
@@ -59,7 +63,54 @@ const SalesEntry = () => {
   }
 
   const handleAddItem = (product) => {
-    addItemToSale(product, 1)
+    if (product.hasPacketLoose) {
+      // Show modal for packet/loose selection
+      setSelectedProduct(product)
+      setPacketQty(0)
+      setLooseQty(0)
+      setShowPacketLooseModal(true)
+    } else {
+      // Regular product - add directly
+      addItemToSale(product, 1)
+    }
+  }
+
+  const handlePacketLooseConfirm = () => {
+    if (packetQty === 0 && looseQty === 0) {
+      alert('Please enter packet or loose quantity')
+      return
+    }
+
+    // Add packet quantity if specified
+    if (packetQty > 0) {
+      const packetItem = {
+        ...selectedProduct,
+        id: `${selectedProduct.id}-packet`,
+        name: `${selectedProduct.name} (Packet)`,
+        price: selectedProduct.packetPrice,
+        unit: selectedProduct.packetUnit,
+        saleType: 'packet'
+      }
+      addItemToSale(packetItem, packetQty)
+    }
+
+    // Add loose quantity if specified
+    if (looseQty > 0) {
+      const looseItem = {
+        ...selectedProduct,
+        id: `${selectedProduct.id}-loose`,
+        name: `${selectedProduct.name} (Loose)`,
+        price: selectedProduct.loosePrice,
+        unit: selectedProduct.looseUnit,
+        saleType: 'loose'
+      }
+      addItemToSale(looseItem, looseQty)
+    }
+
+    setShowPacketLooseModal(false)
+    setSelectedProduct(null)
+    setPacketQty(0)
+    setLooseQty(0)
   }
 
   const handleCompleteSale = () => {
@@ -175,7 +226,14 @@ const SalesEntry = () => {
             >
               <div className="flex-1">
                 <p className="font-semibold">{product.name}</p>
-                <p className="text-sm text-gray-600">₹{product.price.toFixed(2)} / {product.unit}</p>
+                {product.hasPacketLoose ? (
+                  <div className="text-sm text-gray-600">
+                    <p>Packet: ₹{product.packetPrice} / {product.packetUnit}</p>
+                    <p>Loose: ₹{product.loosePrice} / {product.looseUnit}</p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-600">₹{product.price.toFixed(2)} / {product.unit}</p>
+                )}
               </div>
               <button
                 onClick={() => handleAddItem(product)}
@@ -188,6 +246,110 @@ const SalesEntry = () => {
           ))}
         </div>
       </div>
+
+      {/* Packet/Loose Selection Modal */}
+      {showPacketLooseModal && selectedProduct && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-xl font-bold mb-4">{selectedProduct.name}</h3>
+            
+            <div className="space-y-4 mb-6">
+              {/* Packet Selection */}
+              <div className="border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <p className="font-semibold">Packet (25 kg)</p>
+                    <p className="text-sm text-gray-600">₹{selectedProduct.packetPrice} per packet</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => setPacketQty(Math.max(0, packetQty - 1))}
+                    className="bg-gray-200 p-2 rounded tap-highlight-transparent"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <input
+                    type="number"
+                    value={packetQty}
+                    onChange={(e) => setPacketQty(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-20 text-center border rounded px-2 py-1"
+                  />
+                  <button
+                    onClick={() => setPacketQty(packetQty + 1)}
+                    className="bg-primary text-white p-2 rounded tap-highlight-transparent"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                  <span className="text-sm text-gray-600">packets</span>
+                </div>
+              </div>
+
+              {/* Loose Selection */}
+              <div className="border rounded-lg p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <p className="font-semibold">Loose (per kg)</p>
+                    <p className="text-sm text-gray-600">₹{selectedProduct.loosePrice} per kg</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => setLooseQty(Math.max(0, looseQty - 1))}
+                    className="bg-gray-200 p-2 rounded tap-highlight-transparent"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <input
+                    type="number"
+                    value={looseQty}
+                    onChange={(e) => setLooseQty(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-20 text-center border rounded px-2 py-1"
+                  />
+                  <button
+                    onClick={() => setLooseQty(looseQty + 1)}
+                    className="bg-primary text-white p-2 rounded tap-highlight-transparent"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                  <span className="text-sm text-gray-600">kg</span>
+                </div>
+              </div>
+
+              {/* Total Preview */}
+              {(packetQty > 0 || looseQty > 0) && (
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-sm font-semibold mb-1">Total:</p>
+                  {packetQty > 0 && (
+                    <p className="text-sm">Packet: {packetQty} × ₹{selectedProduct.packetPrice} = ₹{(packetQty * selectedProduct.packetPrice).toFixed(2)}</p>
+                  )}
+                  {looseQty > 0 && (
+                    <p className="text-sm">Loose: {looseQty} kg × ₹{selectedProduct.loosePrice} = ₹{(looseQty * selectedProduct.loosePrice).toFixed(2)}</p>
+                  )}
+                  <p className="text-lg font-bold text-primary mt-2">
+                    ₹{((packetQty * selectedProduct.packetPrice) + (looseQty * selectedProduct.loosePrice)).toFixed(2)}
+                  </p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowPacketLooseModal(false)}
+                className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-semibold tap-highlight-transparent"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handlePacketLooseConfirm}
+                className="flex-1 bg-primary text-white py-3 rounded-lg font-semibold tap-highlight-transparent"
+              >
+                Add to Sale
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
