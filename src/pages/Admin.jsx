@@ -269,15 +269,17 @@ const Admin = () => {
                   <div className="flex gap-2">
                     <input
                       type="number"
-                      value={editingProduct.price}
+                      value={editingProduct.price || ''}
                       onChange={(e) => setEditingProduct({ ...editingProduct, price: parseFloat(e.target.value) })}
                       className="flex-1 px-3 py-2 border rounded-lg"
+                      placeholder="Price"
                     />
                     <input
                       type="text"
-                      value={editingProduct.unit}
+                      value={editingProduct.unit || ''}
                       onChange={(e) => setEditingProduct({ ...editingProduct, unit: e.target.value })}
                       className="flex-1 px-3 py-2 border rounded-lg"
+                      placeholder="Unit"
                     />
                   </div>
                 )}
@@ -309,7 +311,7 @@ const Admin = () => {
                         <p>Loose: ₹{product.loosePrice} / {product.looseUnit}</p>
                       </div>
                     ) : (
-                      <p className="text-sm text-gray-600">₹{product.price.toFixed(2)} / {product.unit}</p>
+                      <p className="text-sm text-gray-600">₹{product.price?.toFixed(2) || 0} / {product.unit || ''}</p>
                     )}
                     <p className="text-xs text-gray-500 capitalize">{product.category}</p>
                   </div>
