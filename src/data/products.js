@@ -76,25 +76,165 @@ export const products = [
   { id: 12, name: 'Kabuli Chana', price: 140, unit: '1 kg', category: 'pulses', image: 'https://images.unsplash.com/photo-1596797882870-8c33deeac224?w=400' },
   { id: 13, name: 'Rajma (Kidney Beans)', price: 150, unit: '1 kg', category: 'pulses', image: 'https://images.unsplash.com/photo-1596797882870-8c33deeac224?w=400' },
 
-  // Wheat Varieties
-  { id: 14, name: 'Whole Wheat Atta', price: 40, unit: '1 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
-  { id: 15, name: 'Sharbati Wheat Atta', price: 50, unit: '1 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
-  { id: 16, name: 'Lokwan Wheat Atta', price: 45, unit: '1 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
-  { id: 17, name: 'Multigrain Atta', price: 60, unit: '1 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
-  { id: 18, name: 'Chakki Fresh Atta', price: 48, unit: '1 kg', category: 'wheat', image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400' },
+  // Wheat Varieties - Dual pricing (packet & loose)
+  { 
+    id: 14, 
+    name: 'Whole Wheat Atta', 
+    category: 'wheat',
+    hasPacketLoose: true,
+    packetPrice: 950,
+    packetUnit: '25 kg',
+    loosePrice: 42,
+    looseUnit: '1 kg',
+    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
+  },
+  { 
+    id: 15, 
+    name: 'Sharbati Wheat Atta', 
+    category: 'wheat',
+    hasPacketLoose: true,
+    packetPrice: 1200,
+    packetUnit: '25 kg',
+    loosePrice: 52,
+    looseUnit: '1 kg',
+    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
+  },
+  { 
+    id: 16, 
+    name: 'Lokwan Wheat Atta', 
+    category: 'wheat',
+    hasPacketLoose: true,
+    packetPrice: 1050,
+    packetUnit: '25 kg',
+    loosePrice: 47,
+    looseUnit: '1 kg',
+    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
+  },
+  { 
+    id: 17, 
+    name: 'Multigrain Atta', 
+    category: 'wheat',
+    hasPacketLoose: true,
+    packetPrice: 1450,
+    packetUnit: '25 kg',
+    loosePrice: 62,
+    looseUnit: '1 kg',
+    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
+  },
+  { 
+    id: 18, 
+    name: 'Chakki Fresh Atta', 
+    category: 'wheat',
+    hasPacketLoose: true,
+    packetPrice: 1150,
+    packetUnit: '25 kg',
+    loosePrice: 50,
+    looseUnit: '1 kg',
+    image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
+  },
 
-  // Refined Oil Varieties
-  { id: 19, name: 'Sunflower Oil', price: 180, unit: '1 liter', category: 'refined-oil', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400' },
-  { id: 20, name: 'Soybean Oil', price: 160, unit: '1 liter', category: 'refined-oil', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400' },
-  { id: 21, name: 'Rice Bran Oil', price: 200, unit: '1 liter', category: 'refined-oil', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400' },
-  { id: 22, name: 'Groundnut Oil', price: 220, unit: '1 liter', category: 'refined-oil', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400' },
-  { id: 23, name: 'Palm Oil', price: 140, unit: '1 liter', category: 'refined-oil', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400' },
+  // Refined Oil Varieties - Dual pricing (packet & loose)
+  { 
+    id: 19, 
+    name: 'Sunflower Oil', 
+    category: 'refined-oil',
+    hasPacketLoose: true,
+    packetPrice: 2650,
+    packetUnit: '15 liter',
+    loosePrice: 185,
+    looseUnit: '1 liter',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
+  },
+  { 
+    id: 20, 
+    name: 'Soybean Oil', 
+    category: 'refined-oil',
+    hasPacketLoose: true,
+    packetPrice: 2350,
+    packetUnit: '15 liter',
+    loosePrice: 165,
+    looseUnit: '1 liter',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
+  },
+  { 
+    id: 21, 
+    name: 'Rice Bran Oil', 
+    category: 'refined-oil',
+    hasPacketLoose: true,
+    packetPrice: 2950,
+    packetUnit: '15 liter',
+    loosePrice: 205,
+    looseUnit: '1 liter',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
+  },
+  { 
+    id: 22, 
+    name: 'Groundnut Oil', 
+    category: 'refined-oil',
+    hasPacketLoose: true,
+    packetPrice: 3250,
+    packetUnit: '15 liter',
+    loosePrice: 225,
+    looseUnit: '1 liter',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
+  },
+  { 
+    id: 23, 
+    name: 'Palm Oil', 
+    category: 'refined-oil',
+    hasPacketLoose: true,
+    packetPrice: 2050,
+    packetUnit: '15 liter',
+    loosePrice: 145,
+    looseUnit: '1 liter',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
+  },
 
-  // Mustard Oil Varieties
-  { id: 24, name: 'Kachi Ghani Mustard Oil', price: 180, unit: '1 liter', category: 'mustard-oil', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400' },
-  { id: 25, name: 'Pure Mustard Oil', price: 160, unit: '1 liter', category: 'mustard-oil', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400' },
-  { id: 26, name: 'Organic Mustard Oil', price: 220, unit: '1 liter', category: 'mustard-oil', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400' },
-  { id: 27, name: 'Double Filtered Mustard Oil', price: 190, unit: '1 liter', category: 'mustard-oil', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400' },
+  // Mustard Oil Varieties - Dual pricing (packet & loose)
+  { 
+    id: 24, 
+    name: 'Kachi Ghani Mustard Oil', 
+    category: 'mustard-oil',
+    hasPacketLoose: true,
+    packetPrice: 2650,
+    packetUnit: '15 liter',
+    loosePrice: 185,
+    looseUnit: '1 liter',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
+  },
+  { 
+    id: 25, 
+    name: 'Pure Mustard Oil', 
+    category: 'mustard-oil',
+    hasPacketLoose: true,
+    packetPrice: 2350,
+    packetUnit: '15 liter',
+    loosePrice: 165,
+    looseUnit: '1 liter',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
+  },
+  { 
+    id: 26, 
+    name: 'Organic Mustard Oil', 
+    category: 'mustard-oil',
+    hasPacketLoose: true,
+    packetPrice: 3250,
+    packetUnit: '15 liter',
+    loosePrice: 225,
+    looseUnit: '1 liter',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
+  },
+  { 
+    id: 27, 
+    name: 'Double Filtered Mustard Oil', 
+    category: 'mustard-oil',
+    hasPacketLoose: true,
+    packetPrice: 2800,
+    packetUnit: '15 liter',
+    loosePrice: 195,
+    looseUnit: '1 liter',
+    image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400'
+  },
 ]
 
 export const categories = [
