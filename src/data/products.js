@@ -1,11 +1,19 @@
 export const products = [
-  // Rice Varieties
-  { id: 1, name: 'Basmati Rice - Premium', price: 120, unit: '1 kg', category: 'rice', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
-  { id: 2, name: 'Basmati Rice - Regular', price: 80, unit: '1 kg', category: 'rice', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
-  { id: 3, name: 'Sona Masoori Rice', price: 60, unit: '1 kg', category: 'rice', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
-  { id: 4, name: 'Kolam Rice', price: 55, unit: '1 kg', category: 'rice', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
-  { id: 5, name: 'Brown Rice', price: 90, unit: '1 kg', category: 'rice', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
-  { id: 6, name: 'Ponni Rice', price: 50, unit: '1 kg', category: 'rice', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  // Rice Varieties - Packet (25 kg)
+  { id: 1, name: 'Basmati Rice - Premium (Packet)', price: 2900, unit: '25 kg', category: 'rice', saleType: 'packet', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  { id: 2, name: 'Basmati Rice - Regular (Packet)', price: 1900, unit: '25 kg', category: 'rice', saleType: 'packet', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  { id: 3, name: 'Sona Masoori Rice (Packet)', price: 1400, unit: '25 kg', category: 'rice', saleType: 'packet', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  { id: 4, name: 'Kolam Rice (Packet)', price: 1300, unit: '25 kg', category: 'rice', saleType: 'packet', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  { id: 5, name: 'Brown Rice (Packet)', price: 2100, unit: '25 kg', category: 'rice', saleType: 'packet', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  { id: 6, name: 'Ponni Rice (Packet)', price: 1200, unit: '25 kg', category: 'rice', saleType: 'packet', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  
+  // Rice Varieties - Loose (per kg)
+  { id: 101, name: 'Basmati Rice - Premium (Loose)', price: 125, unit: '1 kg', category: 'rice', saleType: 'loose', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  { id: 102, name: 'Basmati Rice - Regular (Loose)', price: 85, unit: '1 kg', category: 'rice', saleType: 'loose', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  { id: 103, name: 'Sona Masoori Rice (Loose)', price: 65, unit: '1 kg', category: 'rice', saleType: 'loose', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  { id: 104, name: 'Kolam Rice (Loose)', price: 60, unit: '1 kg', category: 'rice', saleType: 'loose', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  { id: 105, name: 'Brown Rice (Loose)', price: 95, unit: '1 kg', category: 'rice', saleType: 'loose', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
+  { id: 106, name: 'Ponni Rice (Loose)', price: 55, unit: '1 kg', category: 'rice', saleType: 'loose', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400' },
 
   // Pulses Varieties
   { id: 7, name: 'Toor Dal (Arhar)', price: 120, unit: '1 kg', category: 'pulses', image: 'https://images.unsplash.com/photo-1596797882870-8c33deeac224?w=400' },
